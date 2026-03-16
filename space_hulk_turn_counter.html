@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>Space Hulk Turn Counter</title>
+  <style>
+    :root {
+      --bg: #0b1020;
+      --panel: #151b31;
+      --border: #2d375f;
+      --text: #f3f6ff;
+      --muted: #aeb8d8;
+      --marine: #2b6dff;
+      --stealer: #b11d2f;
+      --accent: #f0c75e;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      background: radial-gradient(circle at top, #1a2342 0%, var(--bg) 55%);
+      color: var(--text);
+      min-height: 100vh;
+      padding: 20px;
+    }
+
+    .app {
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    h1 {
+      text-align: center;
+      margin: 8px 0 10px;
+      letter-spacing: 1px;
+    }
+
+    .subtitle {
+      text-align: center;
+      color: var(--muted);
+      margin-bottom: 24px;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 18px;
+    }
+
+    .card {
+      background: rgba(21, 27, 49, 0.96);
+      border: 2px solid var(--border);
+      border-radius: 18px;
+      padding: 20px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.25);
+    }
+
+    .card.marine { border-color: rgba(43,109,255,0.55); }
+    .card.stealer { border-color: rgba(177,29,47,0.6); }
+
+    .label {
+      font-size: 1.2rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 12px;
+    }
+
+    .marine .label { color: #9cc0ff; }
+    .stealer .label { color: #ff99a5; }
+
+    .count {
+      font-size: clamp(4rem, 10vw, 6rem);
+      font-weight: 800;
+      text-align: center;
+      margin: 18px 0 22px;
+    }
+
+    .controls {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+    }
+
+    button {
+      appearance: none;
+      border: none;
+      border-radius: 12px;
+      padding: 14px 10px;
+      font-size: 1rem;
+      font-weight: 700;
+      cursor: pointer;
+      color: white;
+      transition: transform 0.08s ease, opacity 0.2s ease;
+    }
+
+    button:active { transform: scale(0.98); }
+    button:hover { opacity: 0.92; }
+
+    .plus { background: #1f8f4e; }
+    .minus { background: #7a2631; }
+    .reset-small { background: #5a6487; }
+
+    .footer-controls {
+      margin-top: 20px;
+      display: flex;
+      justify-content: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .footer-controls button {
+      min-width: 180px;
+      background: var(--accent);
+      color: #232323;
+    }
+
+    .turn-banner {
+      margin: 22px auto 0;
+      max-width: 420px;
+      text-align: center;
+      background: rgba(240, 199, 94, 0.12);
+      color: #ffe39b;
+      border: 1px solid rgba(240, 199, 94, 0.35);
+      border-radius: 14px;
+      padding: 14px;
+      font-size: 1.1rem;
+      font-weight: 700;
+    }
+
+    @media (max-width: 640px) {
+      body { padding: 14px; }
+      .card { padding: 16px; }
+      .controls { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <h1>Space Hulk Turn Counter</h1>
+    <div class="subtitle">Simple iPad-friendly turn tracker for Genestealers and Space Marines</div>
+
+    <div class="grid">
+      <section class="card stealer">
+        <div class="label">Genestealer Turn</div>
+        <div class="count" id="genestealerCount">1</div>
+        <div class="controls">
+          <button class="minus" onclick="changeCount('genestealer', -1)">-1</button>
+          <button class="reset-small" onclick="resetSingle('genestealer')">Reset</button>
+          <button class="plus" onclick="changeCount('genestealer', 1)">+1</button>
+        </div>
+      </section>
+
+      <section class="card marine">
+        <div class="label">Space Marine Turn</div>
+        <div class="count" id="marineCount">1</div>
+        <div class="controls">
+          <button class="minus" onclick="changeCount('marine', -1)">-1</button>
+          <button class="reset-small" onclick="resetSingle('marine')">Reset</button>
+          <button class="plus" onclick="changeCount('marine', 1)">+1</button>
+        </div>
+      </section>
+    </div>
+
+    <div class="turn-banner" id="activeTurnBanner">Active Turn: Genestealers</div>
+
+    <div class="footer-controls">
+      <button onclick="toggleActiveTurn()">Switch Active Side</button>
+      <button onclick="resetAll()">Reset Both Counters</button>
+    </div>
+  </div>
+
+  <script>
+    const defaultState = {
+      genestealer: 1,
+      marine: 1,
+      activeTurn: 'Genestealers'
+    };
+
+    let state = loadState();
+    render();
+
+    function loadState() {
+      const saved = localStorage.getItem('spaceHulkTurnCounter');
+      if (!saved) return { ...defaultState };
+
+      try {
+        return { ...defaultState, ...JSON.parse(saved) };
+      } catch {
+        return { ...defaultState };
+      }
+    }
+
+    function saveState() {
+      localStorage.setItem('spaceHulkTurnCounter', JSON.stringify(state));
+    }
+
+    function changeCount(side, amount) {
+      state[side] = Math.max(1, state[side] + amount);
+      saveState();
+      render();
+    }
+
+    function resetSingle(side) {
+      state[side] = 1;
+      saveState();
+      render();
+    }
+
+    function resetAll() {
+      state = { ...defaultState };
+      saveState();
+      render();
+    }
+
+    function toggleActiveTurn() {
+      state.activeTurn = state.activeTurn === 'Genestealers' ? 'Space Marines' : 'Genestealers';
+      saveState();
+      render();
+    }
+
+    function render() {
+      document.getElementById('genestealerCount').textContent = state.genestealer;
+      document.getElementById('marineCount').textContent = state.marine;
+      document.getElementById('activeTurnBanner').textContent = `Active Turn: ${state.activeTurn}`;
+    }
+  </script>
+</body>
+</html>
