@@ -34,75 +34,88 @@ body {
 
 .app {
   width: 100%;
-  max-width: 650px;
+  max-width: none;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .space-hulk-title {
+  display: inline-block;
+  width: auto;
+  margin: 0 auto 18px auto;
   text-align: center;
   font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-  font-size: clamp(3.5rem, 9vw, 6rem);
+  font-size: clamp(4.5rem, 12vw, 8rem);
   font-weight: 900;
-  letter-spacing: 6px;
-  margin-bottom: 18px;
+  letter-spacing: 4px;
   white-space: nowrap;
-
-  /* metallic base */
-  background: linear-gradient(
-    180deg,
-    #fff6cc 0%,
-    #f0c75e 30%,
-    #b8892c 55%,
-    #f0c75e 75%,
-    #fff6cc 100%
-  );
-
-  /* animated light sweep overlay */
-  background-image:
-    linear-gradient(
-      120deg,
-      rgba(255,255,255,0) 0%,
-      rgba(255,255,255,0.0) 35%,
-      rgba(255,255,255,0.9) 50%,
-      rgba(255,255,255,0.0) 65%,
-      rgba(255,255,255,0) 100%
-    ),
-    linear-gradient(
-      180deg,
-      #fff6cc 0%,
-      #f0c75e 30%,
-      #b8892c 55%,
-      #f0c75e 75%,
-      #fff6cc 100%
-    );
-
-  background-size: 200% 100%, 100% 100%;
-  animation: sweep 6s linear infinite;
-
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
-
-  -webkit-text-stroke: 1.5px rgba(0,0,0,0.7);
-
+  color: #f0c75e;
+  -webkit-text-stroke: 1px rgba(0,0,0,0.6);
   text-shadow:
     0 0 6px rgba(240,199,94,.5),
-    0 0 16px rgba(240,199,94,.25);
-}
-
-@keyframes sweep {
-  0% {
-    background-position: -150% 0, 0 0;
-  }
-  100% {
-    background-position: 150% 0, 0 0;
-  }
+    0 0 14px rgba(240,199,94,.25);
+  position: relative;
+  line-height: 1;
 }
 
 .space-hulk-title.hidden {
   display: none;
 }
 
+.space-hulk-title.flicker {
+  animation: flicker 1.5s ease-in-out;
+}
+
+@keyframes flicker {
+  0% { opacity: 0; transform: scale(0.98); }
+  10% { opacity: 1; }
+  20% { opacity: 0.3; }
+  30% { opacity: 1; }
+  40% { opacity: 0.5; }
+  50% { opacity: 1; transform: scale(1.02); }
+  70% { opacity: 0.7; }
+  100% { opacity: 1; transform: scale(1); }
+}
+
+.space-hulk-title::after {
+  content: attr(data-text);
+  position: absolute;
+  left: 50%;
+  top: 0;
+  transform: translateX(-50%);
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  white-space: nowrap;
+  font: inherit;
+  letter-spacing: inherit;
+  line-height: inherit;
+  text-align: center;
+  background: linear-gradient(
+    120deg,
+    rgba(255,255,255,0) 0%,
+    rgba(255,255,255,0) 40%,
+    rgba(255,255,255,0.9) 50%,
+    rgba(255,255,255,0) 60%,
+    rgba(255,255,255,0) 100%
+  );
+  background-size: 220% 100%;
+  background-repeat: no-repeat;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  animation: sweep 6s linear infinite;
+}
+
+@keyframes sweep {
+  0% { background-position: -150% 0; }
+  100% { background-position: 150% 0; }
+}
+
 .card {
+  width: 100%;
+  max-width: 650px;
   background: rgba(10,15,30,.85);
   border: 2px solid rgba(255,255,255,.15);
   border-radius: 20px;
@@ -174,17 +187,27 @@ button:active {
 .small-buttons {
   margin-top: 18px;
   display: flex;
-  justify-content: center;
-  gap: 10px;
+  justify-content: space-between;
+  gap: 50px;
 }
 
 .undo-button,
 .reset-button {
-  font-size: .8rem;
-  padding: 6px 10px;
+  font-size: 1rem;
+  padding: 10px 16px;
   background: #4a4f6b;
   color: #ddd;
-  opacity: .7;
+  opacity: .85;
+  border-radius: 12px;
+  height: 44px;
+}
+
+.undo-button {
+  flex: .25;
+}
+
+.reset-button {
+  flex: 0.25;
 }
 
 .icon-wrapper {
@@ -234,11 +257,10 @@ button:active {
 </head>
 <body>
 <div class="app">
-  <div id="spaceHulkTitle" class="space-hulk-title">SPACE HULK</div>
+  <div id="spaceHulkTitle" class="space-hulk-title" data-text="SPACE HULK">SPACE HULK</div>
 
   <section class="card">
     <div class="turn-banner" id="activeTurnBanner">Press Next to Start</div>
-
     <div class="count" id="turnCount"></div>
 
     <button class="next-button" onclick="nextTurn()">NEXT</button>
@@ -258,6 +280,14 @@ const defaultState = {
 
 let state = loadState();
 render();
+
+function getElements() {
+  return {
+    titleEl: document.getElementById('spaceHulkTitle'),
+    turnEl: document.getElementById('turnCount'),
+    banner: document.getElementById('activeTurnBanner')
+  };
+}
 
 function loadState() {
   const saved = localStorage.getItem('spaceHulkTurnCounter');
@@ -280,33 +310,51 @@ function saveState() {
   localStorage.setItem('spaceHulkTurnCounter', JSON.stringify(state));
 }
 
-function nextTurn() {
-  if (state.turn === 0) {
-    state.turn = 1;
-    state.activeTurn = 'Space Marines';
-  } else if (state.activeTurn === 'Space Marines') {
-    state.activeTurn = 'Tyranids';
-  } else {
-    state.activeTurn = 'Space Marines';
-    state.turn += 1;
-  }
+function triggerTitleFlicker() {
+  const { titleEl } = getElements();
+  if (!titleEl) return;
+  titleEl.classList.remove('flicker');
+  void titleEl.offsetWidth;
+  titleEl.classList.add('flicker');
+}
 
+function advanceState(currentState) {
+  const next = { ...currentState };
+  if (next.turn === 0) {
+    next.turn = 1;
+    next.activeTurn = 'Space Marines';
+  } else if (next.activeTurn === 'Space Marines') {
+    next.activeTurn = 'Tyranids';
+  } else {
+    next.activeTurn = 'Space Marines';
+    next.turn += 1;
+  }
+  return next;
+}
+
+function rewindState(currentState) {
+  const prev = { ...currentState };
+  if (prev.turn === 0) return prev;
+  if (prev.turn === 1 && prev.activeTurn === 'Space Marines') {
+    return { ...defaultState };
+  }
+  if (prev.activeTurn === 'Tyranids') {
+    prev.activeTurn = 'Space Marines';
+    return prev;
+  }
+  prev.activeTurn = 'Tyranids';
+  prev.turn = Math.max(1, prev.turn - 1);
+  return prev;
+}
+
+function nextTurn() {
+  state = advanceState(state);
   saveState();
   render();
 }
 
 function undoTurn() {
-  if (state.turn === 0) return;
-
-  if (state.turn === 1 && state.activeTurn === 'Space Marines') {
-    state = { ...defaultState };
-  } else if (state.activeTurn === 'Tyranids') {
-    state.activeTurn = 'Space Marines';
-  } else {
-    state.activeTurn = 'Tyranids';
-    state.turn = Math.max(1, state.turn - 1);
-  }
-
+  state = rewindState(state);
   saveState();
   render();
 }
@@ -318,15 +366,18 @@ function resetAll() {
 }
 
 function render() {
-  const titleEl = document.getElementById('spaceHulkTitle');
-  const turnEl = document.getElementById('turnCount');
-  const banner = document.getElementById('activeTurnBanner');
+  const { titleEl, turnEl, banner } = getElements();
+
+  if (!titleEl || !turnEl || !banner) return;
 
   if (state.turn === 0) {
     turnEl.textContent = '';
     banner.textContent = 'Press Next to Start';
     banner.classList.remove('marine', 'tyranid');
+
+    const shouldFlicker = titleEl.classList.contains('hidden');
     titleEl.classList.remove('hidden');
+    if (shouldFlicker) triggerTitleFlicker();
     return;
   }
 
@@ -351,50 +402,42 @@ function runTests() {
 
   let testState = { turn: 0, activeTurn: '' };
 
-  const next = (s) => {
-    const copy = { ...s };
-    if (copy.turn === 0) {
-      copy.turn = 1;
-      copy.activeTurn = 'Space Marines';
-    } else if (copy.activeTurn === 'Space Marines') {
-      copy.activeTurn = 'Tyranids';
-    } else {
-      copy.activeTurn = 'Space Marines';
-      copy.turn += 1;
-    }
-    return copy;
-  };
-
-  const undo = (s) => {
-    const copy = { ...s };
-    if (copy.turn === 0) return copy;
-    if (copy.turn === 1 && copy.activeTurn === 'Space Marines') return { turn: 0, activeTurn: '' };
-    if (copy.activeTurn === 'Tyranids') {
-      copy.activeTurn = 'Space Marines';
-      return copy;
-    }
-    copy.activeTurn = 'Tyranids';
-    copy.turn = Math.max(1, copy.turn - 1);
-    return copy;
-  };
-
-  testState = next(testState);
+  testState = advanceState(testState);
   assert(testState.turn === 1 && testState.activeTurn === 'Space Marines', 'Next from start should go to Turn 1 Space Marines');
 
-  testState = next(testState);
+  testState = advanceState(testState);
   assert(testState.turn === 1 && testState.activeTurn === 'Tyranids', 'Second next should go to Turn 1 Tyranids');
 
-  testState = next(testState);
+  testState = advanceState(testState);
   assert(testState.turn === 2 && testState.activeTurn === 'Space Marines', 'Third next should go to Turn 2 Space Marines');
 
-  testState = undo(testState);
+  testState = rewindState(testState);
   assert(testState.turn === 1 && testState.activeTurn === 'Tyranids', 'Undo from Turn 2 Space Marines should go to Turn 1 Tyranids');
 
-  testState = undo(testState);
+  testState = rewindState(testState);
   assert(testState.turn === 1 && testState.activeTurn === 'Space Marines', 'Undo from Turn 1 Tyranids should go to Turn 1 Space Marines');
 
-  testState = undo(testState);
+  testState = rewindState(testState);
   assert(testState.turn === 0 && testState.activeTurn === '', 'Undo from Turn 1 Space Marines should go to start');
+
+  testState = rewindState(testState);
+  assert(testState.turn === 0 && testState.activeTurn === '', 'Undo from start should stay at start');
+
+  testState = { turn: 4, activeTurn: 'Tyranids' };
+  testState = rewindState(testState);
+  assert(testState.turn === 4 && testState.activeTurn === 'Space Marines', 'Undo from Tyranids should return to same turn Space Marines');
+
+  testState = { turn: 4, activeTurn: 'Space Marines' };
+  testState = rewindState(testState);
+  assert(testState.turn === 3 && testState.activeTurn === 'Tyranids', 'Undo from Space Marines should return to previous turn Tyranids');
+
+  const appEl = document.querySelector('.app');
+  const cardEl = document.querySelector('.card');
+  assert(appEl instanceof HTMLElement, 'App container should exist');
+  assert(cardEl instanceof HTMLElement, 'Card container should exist');
+  assert(getComputedStyle(appEl).display === 'flex', 'App container should use flex layout for centering');
+  assert(getComputedStyle(appEl).alignItems === 'center', 'App container should center its children horizontally');
+  assert(getComputedStyle(cardEl).maxWidth === '650px', 'Card should keep a fixed max width');
 }
 
 runTests();
