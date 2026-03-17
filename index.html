@@ -5,7 +5,6 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
 <title>Space Hulk Turn Counter</title>
 
-<!-- Google Federo font -->
 <link href="https://fonts.googleapis.com/css2?family=Federo&display=swap" rel="stylesheet">
 
 <style>
@@ -18,35 +17,97 @@
 * { box-sizing: border-box; }
 
 body {
-  margin:0;
-  font-family:'Federo', sans-serif;
-
-  /* Space Hulk style background */
+  margin: 0;
+  font-family: 'Federo', sans-serif;
   background-image:
     linear-gradient(rgba(5,10,25,.82), rgba(5,10,25,.82)),
     url("images/space_hulk_background.jpg");
-
-  background-size:cover;
-  background-position:center;
-  color:#f3f6ff;
-  min-height:100vh;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  padding:20px;
+  background-size: cover;
+  background-position: center;
+  color: #f3f6ff;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
 }
 
 .app {
-  width:100%;
-  max-width:650px;
+  width: 100%;
+  max-width: 650px;
+}
+
+.space-hulk-title {
+  text-align: center;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-size: clamp(3.5rem, 9vw, 6rem);
+  font-weight: 900;
+  letter-spacing: 6px;
+  margin-bottom: 18px;
+  white-space: nowrap;
+
+  /* metallic base */
+  background: linear-gradient(
+    180deg,
+    #fff6cc 0%,
+    #f0c75e 30%,
+    #b8892c 55%,
+    #f0c75e 75%,
+    #fff6cc 100%
+  );
+
+  /* animated light sweep overlay */
+  background-image:
+    linear-gradient(
+      120deg,
+      rgba(255,255,255,0) 0%,
+      rgba(255,255,255,0.0) 35%,
+      rgba(255,255,255,0.9) 50%,
+      rgba(255,255,255,0.0) 65%,
+      rgba(255,255,255,0) 100%
+    ),
+    linear-gradient(
+      180deg,
+      #fff6cc 0%,
+      #f0c75e 30%,
+      #b8892c 55%,
+      #f0c75e 75%,
+      #fff6cc 100%
+    );
+
+  background-size: 200% 100%, 100% 100%;
+  animation: sweep 6s linear infinite;
+
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+
+  -webkit-text-stroke: 1.5px rgba(0,0,0,0.7);
+
+  text-shadow:
+    0 0 6px rgba(240,199,94,.5),
+    0 0 16px rgba(240,199,94,.25);
+}
+
+@keyframes sweep {
+  0% {
+    background-position: -150% 0, 0 0;
+  }
+  100% {
+    background-position: 150% 0, 0 0;
+  }
+}
+
+.space-hulk-title.hidden {
+  display: none;
 }
 
 .card {
-  background:rgba(10,15,30,.85);
-  border:2px solid rgba(255,255,255,.15);
-  border-radius:20px;
-  padding:28px;
-  text-align:center;
+  background: rgba(10,15,30,.85);
+  border: 2px solid rgba(255,255,255,.15);
+  border-radius: 20px;
+  padding: 28px;
+  text-align: center;
   backdrop-filter: blur(6px);
 }
 
@@ -54,7 +115,6 @@ body {
   white-space: nowrap;
   width: 100%;
   margin: 0 auto 18px auto;
-  max-width: none;
   padding: 18px 14px;
   font-size: clamp(2.6rem, 7vw, 4.2rem);
   font-weight: 900;
@@ -67,210 +127,277 @@ body {
   gap: 12px;
   line-height: 1.05;
   overflow: hidden;
+  min-height: 130px;
 }
 
 .turn-banner.marine {
-  border-color:rgba(43,109,255,.55);
-  color:#9cc0ff;
-  background:rgba(43,109,255,.12);
+  border-color: rgba(43,109,255,.55);
+  color: #9cc0ff;
+  background: rgba(43,109,255,.12);
 }
 
 .turn-banner.tyranid {
-  border-color:rgba(177,29,47,.6);
-  color:#ff99a5;
-  background:rgba(177,29,47,.12);
-}
-
-.label {
-  margin-top:8px;
-  letter-spacing:2px;
-  font-size:1rem;
-  opacity:.8;
+  border-color: rgba(177,29,47,.6);
+  color: #ff99a5;
+  background: rgba(177,29,47,.12);
 }
 
 .count {
-  font-size:clamp(6rem,16vw,9rem);
-  font-weight:900;
-  margin:10px 0 20px 0;
+  font-size: clamp(6rem, 16vw, 9rem);
+  font-weight: 900;
+  margin: 10px 0 20px 0;
 }
 
 button {
-  border:none;
-  border-radius:14px;
-  cursor:pointer;
-  font-family:'Federo', sans-serif;
+  border: none;
+  border-radius: 14px;
+  cursor: pointer;
+  font-family: 'Federo', sans-serif;
 }
 
-button:active { transform:scale(.97); }
+button:active {
+  transform: scale(.97);
+}
 
-/* BIG PLAY BUTTON */
 .next-button {
-  width:100%;
-  font-size:2rem;
-  font-weight:900;
-  padding:30px 20px;
-  background:rgba(240,199,94,.08);
-  color:#ff6a2a;
-  border:1px solid rgba(240,199,94,.15);
+  width: 100%;
+  font-size: 2rem;
+  font-weight: 900;
+  padding: 30px 20px;
+  background: rgba(240,199,94,.08);
+  color: #ff6a2a;
+  border: 1px solid rgba(240,199,94,.15);
   box-shadow: inset 0 0 0 1px rgba(255,255,255,.03);
   backdrop-filter: blur(2px);
 }
 
 .small-buttons {
-  margin-top:18px;
-  display:flex;
-  justify-content:center;
-  gap:10px;
+  margin-top: 18px;
+  display: flex;
+  justify-content: center;
+  gap: 10px;
 }
 
 .undo-button,
 .reset-button {
-  font-size:.8rem;
-  padding:6px 10px;
-  background:#4a4f6b;
-  color:#ddd;
-  opacity:.7;
+  font-size: .8rem;
+  padding: 6px 10px;
+  background: #4a4f6b;
+  color: #ddd;
+  opacity: .7;
+}
+
+.icon-wrapper {
+  width: 170px;
+  height: 110px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 170px;
 }
 
 .icon {
-  width: 70px;
-  height: 70px;
+  width: 100%;
+  height: 100%;
   object-fit: contain;
-  flex: 0 0 auto;
 }
 
 .icon.marine {
-  width: 120px;
-  height: 120px;
+  width: auto;
+  height: 55%;
+  transform: scaleY(1.05);
+  object-position: center;
 }
 
+.icon.tyranid {
+  width: 100%;
+  height: 100%;
+}
+
+@media (max-width: 700px) {
+  .turn-banner {
+    font-size: clamp(1.8rem, 7vw, 3rem);
+    min-height: 110px;
+  }
+
+  .icon-wrapper {
+    width: 120px;
+    height: 80px;
+    flex: 0 0 120px;
+  }
+
+  .count {
+    font-size: clamp(5rem, 20vw, 8rem);
+  }
+}
 </style>
 </head>
-
 <body>
 <div class="app">
+  <div id="spaceHulkTitle" class="space-hulk-title">SPACE HULK</div>
 
-<section class="card">
+  <section class="card">
+    <div class="turn-banner" id="activeTurnBanner">Press Next to Start</div>
 
-<div class="turn-banner" id="activeTurnBanner">
-Press Next to Start
-</div>
+    <div class="count" id="turnCount"></div>
 
+    <button class="next-button" onclick="nextTurn()">NEXT</button>
 
-
-<div class="count" id="turnCount"></div>
-
-<button class="next-button" onclick="nextTurn()">NEXT</button>
-
-
-<div class="small-buttons">
-<button class="undo-button" onclick="undoTurn()">↶</button>
-<button class="reset-button" onclick="resetAll()">reset</button>
-</div>
-
-</section>
+    <div class="small-buttons">
+      <button class="undo-button" onclick="undoTurn()">↶</button>
+      <button class="reset-button" onclick="resetAll()">reset</button>
+    </div>
+  </section>
 </div>
 
 <script>
-
-const defaultState={
-turn:0,
-activeTurn:''
+const defaultState = {
+  turn: 0,
+  activeTurn: ''
 };
 
-let state=loadState();
+let state = loadState();
 render();
 
-function loadState(){
-const saved=localStorage.getItem('spaceHulkTurnCounter');
-if(!saved) return {...defaultState};
+function loadState() {
+  const saved = localStorage.getItem('spaceHulkTurnCounter');
+  if (!saved) return { ...defaultState };
 
-try{
-return {...defaultState,...JSON.parse(saved)};
-}catch{
-return {...defaultState};
-}
-}
-
-function saveState(){
-localStorage.setItem('spaceHulkTurnCounter',JSON.stringify(state));
-}
-
-function nextTurn(){
-
-if(state.turn===0){
-state.turn=1;
-state.activeTurn='Space Marines';
+  try {
+    const parsed = JSON.parse(saved);
+    return {
+      turn: Number.isInteger(parsed.turn) && parsed.turn >= 0 ? parsed.turn : 0,
+      activeTurn: parsed.activeTurn === 'Space Marines' || parsed.activeTurn === 'Tyranids'
+        ? parsed.activeTurn
+        : ''
+    };
+  } catch {
+    return { ...defaultState };
+  }
 }
 
-else if(state.activeTurn==='Space Marines'){
-state.activeTurn='Tyranids';
+function saveState() {
+  localStorage.setItem('spaceHulkTurnCounter', JSON.stringify(state));
 }
 
-else{
-state.activeTurn='Space Marines';
-state.turn+=1;
+function nextTurn() {
+  if (state.turn === 0) {
+    state.turn = 1;
+    state.activeTurn = 'Space Marines';
+  } else if (state.activeTurn === 'Space Marines') {
+    state.activeTurn = 'Tyranids';
+  } else {
+    state.activeTurn = 'Space Marines';
+    state.turn += 1;
+  }
+
+  saveState();
+  render();
 }
 
-saveState();
-render();
+function undoTurn() {
+  if (state.turn === 0) return;
+
+  if (state.turn === 1 && state.activeTurn === 'Space Marines') {
+    state = { ...defaultState };
+  } else if (state.activeTurn === 'Tyranids') {
+    state.activeTurn = 'Space Marines';
+  } else {
+    state.activeTurn = 'Tyranids';
+    state.turn = Math.max(1, state.turn - 1);
+  }
+
+  saveState();
+  render();
 }
 
-function undoTurn(){
-
-if(state.turn===0) return;
-
-if(state.activeTurn==='Space Marines'){
-state.activeTurn='Tyranids';
-state.turn=Math.max(1,state.turn-1);
+function resetAll() {
+  state = { ...defaultState };
+  saveState();
+  render();
 }
 
-else{
-state.activeTurn='Space Marines';
+function render() {
+  const titleEl = document.getElementById('spaceHulkTitle');
+  const turnEl = document.getElementById('turnCount');
+  const banner = document.getElementById('activeTurnBanner');
+
+  if (state.turn === 0) {
+    turnEl.textContent = '';
+    banner.textContent = 'Press Next to Start';
+    banner.classList.remove('marine', 'tyranid');
+    titleEl.classList.remove('hidden');
+    return;
+  }
+
+  titleEl.classList.add('hidden');
+  turnEl.textContent = String(state.turn);
+
+  if (state.activeTurn === 'Space Marines') {
+    banner.innerHTML = '<div class="icon-wrapper"><img class="icon marine" src="images/imperial_aquila.png" alt="Space Marines icon"></div><span>Space Marine</span>';
+    banner.classList.remove('tyranid');
+    banner.classList.add('marine');
+  } else {
+    banner.innerHTML = '<div class="icon-wrapper"><img class="icon tyranid" src="images/tyranid_icon.png" alt="Tyranid icon"></div><span>Tyranid</span>';
+    banner.classList.remove('marine');
+    banner.classList.add('tyranid');
+  }
 }
 
-saveState();
-render();
+function runTests() {
+  const assert = (condition, message) => {
+    if (!condition) throw new Error(message);
+  };
+
+  let testState = { turn: 0, activeTurn: '' };
+
+  const next = (s) => {
+    const copy = { ...s };
+    if (copy.turn === 0) {
+      copy.turn = 1;
+      copy.activeTurn = 'Space Marines';
+    } else if (copy.activeTurn === 'Space Marines') {
+      copy.activeTurn = 'Tyranids';
+    } else {
+      copy.activeTurn = 'Space Marines';
+      copy.turn += 1;
+    }
+    return copy;
+  };
+
+  const undo = (s) => {
+    const copy = { ...s };
+    if (copy.turn === 0) return copy;
+    if (copy.turn === 1 && copy.activeTurn === 'Space Marines') return { turn: 0, activeTurn: '' };
+    if (copy.activeTurn === 'Tyranids') {
+      copy.activeTurn = 'Space Marines';
+      return copy;
+    }
+    copy.activeTurn = 'Tyranids';
+    copy.turn = Math.max(1, copy.turn - 1);
+    return copy;
+  };
+
+  testState = next(testState);
+  assert(testState.turn === 1 && testState.activeTurn === 'Space Marines', 'Next from start should go to Turn 1 Space Marines');
+
+  testState = next(testState);
+  assert(testState.turn === 1 && testState.activeTurn === 'Tyranids', 'Second next should go to Turn 1 Tyranids');
+
+  testState = next(testState);
+  assert(testState.turn === 2 && testState.activeTurn === 'Space Marines', 'Third next should go to Turn 2 Space Marines');
+
+  testState = undo(testState);
+  assert(testState.turn === 1 && testState.activeTurn === 'Tyranids', 'Undo from Turn 2 Space Marines should go to Turn 1 Tyranids');
+
+  testState = undo(testState);
+  assert(testState.turn === 1 && testState.activeTurn === 'Space Marines', 'Undo from Turn 1 Tyranids should go to Turn 1 Space Marines');
+
+  testState = undo(testState);
+  assert(testState.turn === 0 && testState.activeTurn === '', 'Undo from Turn 1 Space Marines should go to start');
 }
 
-function resetAll(){
-state={...defaultState};
-saveState();
-render();
-}
-
-function render(){
-
-const turnEl=document.getElementById('turnCount');
-const banner=document.getElementById('activeTurnBanner');
-
-turnEl.textContent=state.turn===0?'':state.turn;
-
-if(state.turn===0){
-
-banner.innerHTML='Press Next to Start';
-banner.classList.remove('marine','tyranid');
-return;
-
-}
-
-if(state.activeTurn==='Space Marines'){
-
-banner.innerHTML='<img class="icon marine" src="images/imperial_aquila.png" alt="Space Marines icon"> <span>Space Marine</span>';  
-
-}
-
-else{
-
-banner.innerHTML='<img class="icon" src="images/tyranid_icon.png" alt="Tyranid icon"> <span>Tyranid</span>';  
-
-}
-
-banner.classList.remove('marine','tyranid');
-banner.classList.add(state.activeTurn==='Space Marines'?'marine':'tyranid');
-
-}
-
+runTests();
 </script>
 </body>
 </html>
