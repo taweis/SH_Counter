@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<title>Space Hulk Turn Counter</title>
+
+<!-- Google Federo font -->
+<link href="https://fonts.googleapis.com/css2?family=Federo&display=swap" rel="stylesheet">
+
+<style>
+:root {
+  --marine: #2b6dff;
+  --tyranid: #b11d2f;
+  --accent: #f0c75e;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin:0;
+  font-family:'Federo', sans-serif;
+
+  /* Space Hulk style background */
+  background-image:
+    linear-gradient(rgba(5,10,25,.82), rgba(5,10,25,.82)),
+    url("images/space_hulk_background.jpg");
+
+  background-size:cover;
+  background-position:center;
+  color:#f3f6ff;
+  min-height:100vh;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:20px;
+}
+
+.app {
+  width:100%;
+  max-width:650px;
+}
+
+.card {
+  background:rgba(10,15,30,.85);
+  border:2px solid rgba(255,255,255,.15);
+  border-radius:20px;
+  padding:28px;
+  text-align:center;
+  backdrop-filter: blur(6px);
+}
+
+.turn-banner {
+  white-space: nowrap;
+  width: 100%;
+  margin: 0 auto 18px auto;
+  max-width: none;
+  padding: 18px 14px;
+  font-size: clamp(2.6rem, 7vw, 4.2rem);
+  font-weight: 900;
+  border-radius: 16px;
+  border: 1px solid rgba(240,199,94,.35);
+  background: rgba(240,199,94,.10);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  line-height: 1.05;
+  overflow: hidden;
+}
+
+.turn-banner.marine {
+  border-color:rgba(43,109,255,.55);
+  color:#9cc0ff;
+  background:rgba(43,109,255,.12);
+}
+
+.turn-banner.tyranid {
+  border-color:rgba(177,29,47,.6);
+  color:#ff99a5;
+  background:rgba(177,29,47,.12);
+}
+
+.label {
+  margin-top:8px;
+  letter-spacing:2px;
+  font-size:1rem;
+  opacity:.8;
+}
+
+.count {
+  font-size:clamp(6rem,16vw,9rem);
+  font-weight:900;
+  margin:10px 0 20px 0;
+}
+
+button {
+  border:none;
+  border-radius:14px;
+  cursor:pointer;
+  font-family:'Federo', sans-serif;
+}
+
+button:active { transform:scale(.97); }
+
+/* BIG PLAY BUTTON */
+.next-button {
+  width:100%;
+  font-size:2rem;
+  font-weight:900;
+  padding:30px 20px;
+  background:rgba(240,199,94,.08);
+  color:#ff6a2a;
+  border:1px solid rgba(240,199,94,.15);
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,.03);
+  backdrop-filter: blur(2px);
+}
+
+.small-buttons {
+  margin-top:18px;
+  display:flex;
+  justify-content:center;
+  gap:10px;
+}
+
+.undo-button,
+.reset-button {
+  font-size:.8rem;
+  padding:6px 10px;
+  background:#4a4f6b;
+  color:#ddd;
+  opacity:.7;
+}
+
+.icon {
+  width: 70px;
+  height: 70px;
+  object-fit: contain;
+  flex: 0 0 auto;
+}
+
+.icon.marine {
+  width: 120px;
+  height: 120px;
+}
+
+</style>
+</head>
+
+<body>
+<div class="app">
+
+<section class="card">
+
+<div class="turn-banner" id="activeTurnBanner">
+Press Next to Start
+</div>
+
+
+
+<div class="count" id="turnCount"></div>
+
+<button class="next-button" onclick="nextTurn()">NEXT</button>
+
+
+<div class="small-buttons">
+<button class="undo-button" onclick="undoTurn()">↶</button>
+<button class="reset-button" onclick="resetAll()">reset</button>
+</div>
+
+</section>
+</div>
+
+<script>
+
+const defaultState={
+turn:0,
+activeTurn:''
+};
+
+let state=loadState();
+render();
+
+function loadState(){
+const saved=localStorage.getItem('spaceHulkTurnCounter');
+if(!saved) return {...defaultState};
+
+try{
+return {...defaultState,...JSON.parse(saved)};
+}catch{
+return {...defaultState};
+}
+}
+
+function saveState(){
+localStorage.setItem('spaceHulkTurnCounter',JSON.stringify(state));
+}
+
+function nextTurn(){
+
+if(state.turn===0){
+state.turn=1;
+state.activeTurn='Space Marines';
+}
+
+else if(state.activeTurn==='Space Marines'){
+state.activeTurn='Tyranids';
+}
+
+else{
+state.activeTurn='Space Marines';
+state.turn+=1;
+}
+
+saveState();
+render();
+}
+
+function undoTurn(){
+
+if(state.turn===0) return;
+
+if(state.activeTurn==='Space Marines'){
+state.activeTurn='Tyranids';
+state.turn=Math.max(1,state.turn-1);
+}
+
+else{
+state.activeTurn='Space Marines';
+}
+
+saveState();
+render();
+}
+
+function resetAll(){
+state={...defaultState};
+saveState();
+render();
+}
+
+function render(){
+
+const turnEl=document.getElementById('turnCount');
+const banner=document.getElementById('activeTurnBanner');
+
+turnEl.textContent=state.turn===0?'':state.turn;
+
+if(state.turn===0){
+
+banner.innerHTML='Press Next to Start';
+banner.classList.remove('marine','tyranid');
+return;
+
+}
+
+if(state.activeTurn==='Space Marines'){
+
+banner.innerHTML='<img class="icon marine" src="images/imperial_aquila.png" alt="Space Marines icon"> <span>Space Marine</span>';  
+
+}
+
+else{
+
+banner.innerHTML='<img class="icon" src="images/tyranid_icon.png" alt="Tyranid icon"> <span>Tyranid</span>';  
+
+}
+
+banner.classList.remove('marine','tyranid');
+banner.classList.add(state.activeTurn==='Space Marines'?'marine':'tyranid');
+
+}
+
+</script>
+</body>
+</html>
