@@ -345,6 +345,11 @@ button:active { transform: scale(.97); }
   backdrop-filter: blur(2px);
 }
 
+.next-button:disabled {
+  opacity: 0.4;
+  pointer-events: none;
+}
+
 .small-buttons {
   margin-top: 18px;
   display: flex;
@@ -647,7 +652,18 @@ function toggleDestruct(index) {
 }
 
 function nextTurn() {
+  // Prevent advancing past End Game
+  if (state.turn >= state.endGame && state.activeTurn === 'Tyranids') {
+    return;
+  }
+
   state = advanceState(state);
+
+  // Extra safety: clamp if somehow exceeded
+  if (state.turn > state.endGame) {
+    state.turn = state.endGame;
+  }
+
   saveState();
   render();
 }
@@ -688,11 +704,17 @@ function renderDestruct(destructButtons) {
 
 function render() {
   const { titleEl, turnEl, banner, endGameEl, endGameBoxEl, objectiveButtons, destructButtons } = getElements();
-  if (!titleEl || !turnEl || !banner || !endGameEl || !endGameBoxEl) return;
+  const nextButton = document.querySelector('.next-button');
+  if (!titleEl || !turnEl || !banner || !endGameEl || !endGameBoxEl || !nextButton) return;
 
   endGameEl.textContent = String(state.endGame);
   renderObjectives(objectiveButtons);
   renderDestruct(destructButtons);
+
+  const isGameOver = state.turn >= state.endGame && state.activeTurn === 'Tyranids';
+  nextButton.disabled = isGameOver;
+  nextButton.style.opacity = isGameOver ? '0.4' : '1';
+  nextButton.style.pointerEvents = isGameOver ? 'none' : 'auto';
 
   if (state.turn === 0) {
     turnEl.textContent = '';
@@ -709,6 +731,12 @@ function render() {
   titleEl.classList.add('hidden');
   turnEl.textContent = String(state.turn);
   endGameBoxEl.style.opacity = state.turn >= state.endGame ? '1' : '0.95';
+
+  if (isGameOver) {
+    banner.textContent = 'MISSION COMPLETE';
+    banner.classList.remove('marine', 'tyranid');
+    return;
+  }
 
   if (state.activeTurn === 'Space Marines') {
     banner.innerHTML = '<div class="icon-wrapper"><img class="icon marine" src="images/imperial_aquila.png" alt="Space Marines icon"></div><span>Space Marine</span>';
