@@ -207,13 +207,38 @@ body {
 }
 
 .destruct-button.active {
-  border-color: rgba(255,120,120,.58);
+  border-color: rgba(255,80,80,.9);
+
   background:
-    linear-gradient(180deg, rgba(255,105,105,.26), rgba(68, 16, 16, 0.72));
-  color: #ffd2d2;
+    linear-gradient(180deg, rgba(255,60,60,.35), rgba(70, 10, 10, 0.85));
+
+  color: #ffe5e5;
+
   box-shadow:
-    inset 0 0 0 1px rgba(255,255,255,.05),
-    0 0 16px rgba(255,95,95,.24);
+    inset 0 0 0 1px rgba(255,255,255,.08),
+    0 0 12px rgba(255,60,60,.5),
+    0 0 28px rgba(255,40,40,.45),
+    0 0 60px rgba(255,20,20,.35);
+
+  animation: destructPulse 1.6s infinite;
+}
+
+@keyframes destructPulse {
+  0% {
+    box-shadow:
+      0 0 8px rgba(255,60,60,.4),
+      0 0 20px rgba(255,40,40,.35);
+  }
+  50% {
+    box-shadow:
+      0 0 18px rgba(255,80,80,.7),
+      0 0 45px rgba(255,40,40,.6);
+  }
+  100% {
+    box-shadow:
+      0 0 8px rgba(255,60,60,.4),
+      0 0 20px rgba(255,40,40,.35);
+  }
 }
 
 .objective-name {
@@ -290,6 +315,40 @@ body {
 .count-box {
   min-width: 220px;
   padding: 14px 20px 12px;
+}
+
+.count.danger {
+  color: #ff5a5a;
+  text-shadow:
+    0 0 10px rgba(255, 80, 80, 0.45),
+    0 0 24px rgba(255, 40, 40, 0.35),
+    0 0 42px rgba(255, 20, 20, 0.25);
+  animation: turnDangerPulse 1.1s ease-in-out infinite;
+}
+
+@keyframes turnDangerPulse {
+  0% {
+    transform: scale(1);
+    opacity: 1;
+    text-shadow:
+      0 0 8px rgba(255, 80, 80, 0.35),
+      0 0 18px rgba(255, 40, 40, 0.28);
+  }
+  50% {
+    transform: scale(1.04);
+    opacity: 0.88;
+    text-shadow:
+      0 0 16px rgba(255, 100, 100, 0.7),
+      0 0 34px rgba(255, 40, 40, 0.55),
+      0 0 56px rgba(255, 20, 20, 0.35);
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+    text-shadow:
+      0 0 8px rgba(255, 80, 80, 0.35),
+      0 0 18px rgba(255, 40, 40, 0.28);
+  }
 }
 
 .endgame-box {
@@ -721,7 +780,8 @@ function render() {
     banner.textContent = 'Press Next to Start';
     banner.classList.remove('marine', 'tyranid');
     endGameBoxEl.style.opacity = '0.95';
-
+    turnEl.classList.remove('danger');
+    
     const shouldFlicker = titleEl.classList.contains('hidden');
     titleEl.classList.remove('hidden');
     if (shouldFlicker) triggerTitleFlicker();
@@ -730,6 +790,9 @@ function render() {
 
   titleEl.classList.add('hidden');
   turnEl.textContent = String(state.turn);
+  const turnsRemaining = state.endGame - state.turn;
+  const isDangerTurn = state.turn > 0 && turnsRemaining <= 3;
+  turnEl.classList.toggle('danger', isDangerTurn);
   endGameBoxEl.style.opacity = state.turn >= state.endGame ? '1' : '0.95';
 
   if (isGameOver) {
