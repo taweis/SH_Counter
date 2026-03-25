@@ -547,7 +547,7 @@ button:active { transform: scale(.97); }
           <div class="count" id="turnCount"></div>
         </div>
         <div class="endgame-box">
-          <div class="endgame-label">End Game</div>
+          <div class="endgame-label">Final Turn</div>
           <div class="endgame-value" id="endGameValue"></div>
         </div>
       </div>
@@ -781,7 +781,7 @@ function render() {
     banner.classList.remove('marine', 'tyranid');
     endGameBoxEl.style.opacity = '0.95';
     turnEl.classList.remove('danger');
-    
+
     const shouldFlicker = titleEl.classList.contains('hidden');
     titleEl.classList.remove('hidden');
     if (shouldFlicker) triggerTitleFlicker();
