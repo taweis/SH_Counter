@@ -459,23 +459,23 @@ button:active { transform: scale(.97); }
 
   <div class="main-layout">
     <aside class="objectives-panel">
-      <div class="objectives-title">Objectives</div>
+      <div class="objectives-title">Hanger Defense Weapons</div>
       <div class="objectives-list" id="objectivesList">
         <button class="objective-button" data-index="0" onclick="toggleObjective(0)">
-          <div class="objective-name">Objective 1</div>
-          <div class="objective-status">Awaiting Orders</div>
+          <div class="objective-name">AUTOCANNONS</div>
+          <div class="objective-status">Inactive</div>
         </button>
         <button class="objective-button" data-index="1" onclick="toggleObjective(1)">
-          <div class="objective-name">Objective 2</div>
-          <div class="objective-status">Awaiting Orders</div>
+          <div class="objective-name">LASCANNONS</div>
+          <div class="objective-status">Inactive</div>
         </button>
         <button class="objective-button" data-index="2" onclick="toggleObjective(2)">
-          <div class="objective-name">Objective 3</div>
-          <div class="objective-status">Awaiting Orders</div>
+          <div class="objective-name">MULTI-LASERS</div>
+          <div class="objective-status">Inactive</div>
         </button>
         <button class="objective-button" data-index="3" onclick="toggleObjective(3)">
-          <div class="objective-name">Objective 4</div>
-          <div class="objective-status">Awaiting Orders</div>
+          <div class="objective-name">HEAVY BOLTERS</div>
+          <div class="objective-status">Inactive</div>
         </button>
       </div>
     </aside>
@@ -505,11 +505,11 @@ button:active { transform: scale(.97); }
       <div class="objectives-title">Self Destruct</div>
       <div class="objectives-list" id="destructList">
         <button class="objective-button destruct-button" data-index="0" onclick="toggleDestruct(0)">
-          <div class="objective-name">Reactor Core</div>
+          <div class="objective-name">REACTOR CORE</div>
           <div class="objective-status">Inactive</div>
         </button>
         <button class="objective-button destruct-button" data-index="1" onclick="toggleDestruct(1)">
-          <div class="objective-name">Void Charges</div>
+          <div class="objective-name">VOID CHARGES</div>
           <div class="objective-status">Inactive</div>
         </button>
       </div>
@@ -686,7 +686,7 @@ function renderObjectives(objectiveButtons) {
     button.classList.toggle('active', isActive);
     const statusEl = button.querySelector('.objective-status');
     if (statusEl) {
-      statusEl.textContent = isActive ? 'Objective Achieved' : 'Awaiting Orders';
+      statusEl.textContent = isActive ? 'Weapons Fired' : 'Inactive';
     }
   });
 }
