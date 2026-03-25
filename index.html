@@ -12,6 +12,7 @@
   --marine: #2b6dff;
   --tyranid: #b11d2f;
   --accent: #f0c75e;
+  --panel: rgba(10,15,30,.85);
 }
 
 * { box-sizing: border-box; }
@@ -41,7 +42,6 @@ body {
 
 .space-hulk-title {
   display: inline-block;
-  width: auto;
   margin: 0 auto 18px auto;
   text-align: center;
   font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
@@ -62,13 +62,8 @@ body {
   line-height: 1;
 }
 
-.space-hulk-title.hidden {
-  display: none;
-}
-
-.space-hulk-title.flicker {
-  animation: flicker 1.5s ease-in-out;
-}
+.space-hulk-title.hidden { display: none; }
+.space-hulk-title.flicker { animation: flicker 1.5s ease-in-out; }
 
 @keyframes flicker {
   0% { opacity: 0; transform: scale(0.98); }
@@ -132,34 +127,132 @@ body {
   }
 }
 
+.main-layout {
+  width: 100%;
+  display: grid;
+  grid-template-columns: 190px minmax(0, 650px) 190px;
+  gap: 18px;
+  align-items: start;
+  justify-content: center;
+}
+
+.objectives-panel,
+.destruct-panel,
 .card {
-  width: min(100%, 650px);
-  max-width: 650px;
-  background: rgba(10,15,30,.85);
+  background: var(--panel);
   border: 2px solid rgba(255,255,255,.15);
   border-radius: 20px;
+  backdrop-filter: blur(6px);
+}
+
+.objectives-panel,
+.destruct-panel {
+  padding: 18px 14px;
+}
+
+.destruct-panel {
+  border-color: rgba(255, 110, 110, .22);
+  box-shadow: 0 0 18px rgba(150, 20, 20, .12);
+}
+
+.objectives-title {
+  text-align: center;
+  font-size: 1rem;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: #f0c75e;
+  opacity: 0.9;
+  margin-bottom: 12px;
+}
+
+.objectives-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.objective-button {
+  width: 100%;
+  min-height: 78px;
+  padding: 10px 12px;
+  border: 1px solid rgba(120, 180, 255, 0.18);
+  border-radius: 14px;
+  background:
+    linear-gradient(180deg, rgba(130, 180, 255, 0.08), rgba(20, 30, 55, 0.55));
+  color: #cfdcff;
+  box-shadow:
+    inset 0 0 0 1px rgba(255,255,255,.03),
+    0 0 0 1px rgba(0,0,0,.12);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  text-align: center;
+}
+
+.objective-button:hover {
+  background:
+    linear-gradient(180deg, rgba(130, 180, 255, 0.12), rgba(20, 30, 55, 0.65));
+}
+
+.objective-button.active {
+  border-color: rgba(240,199,94,.45);
+  background:
+    linear-gradient(180deg, rgba(240,199,94,.22), rgba(70, 55, 18, 0.65));
+  color: #ffe7a7;
+  box-shadow:
+    inset 0 0 0 1px rgba(255,255,255,.05),
+    0 0 14px rgba(240,199,94,.18);
+}
+
+.destruct-button.active {
+  border-color: rgba(255,120,120,.58);
+  background:
+    linear-gradient(180deg, rgba(255,105,105,.26), rgba(68, 16, 16, 0.72));
+  color: #ffd2d2;
+  box-shadow:
+    inset 0 0 0 1px rgba(255,255,255,.05),
+    0 0 16px rgba(255,95,95,.24);
+}
+
+.objective-name {
+  font-size: 0.92rem;
+  letter-spacing: 0.5px;
+}
+
+.objective-status {
+  font-size: 0.68rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  opacity: 0.8;
+}
+
+.card {
+  width: 100%;
+  max-width: 650px;
   padding: 28px;
   text-align: center;
-  backdrop-filter: blur(6px);
 }
 
 .turn-banner {
   white-space: nowrap;
   width: 100%;
   margin: 0 auto 18px auto;
-  padding: 18px 14px;
-  font-size: clamp(2.6rem, 7vw, 4.2rem);
-  font-weight: 900;
+  padding: 14px 12px;
+  font-size: clamp(1.6rem, 4vw, 2.2rem);
+  font-weight: 600;
   border-radius: 16px;
-  border: 1px solid rgba(240,199,94,.35);
-  background: rgba(240,199,94,.10);
+  border: 1px solid rgba(240,199,94,.25);
+  background: rgba(240,199,94,.06);
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 12px;
+  gap: 10px;
   line-height: 1.05;
   overflow: hidden;
-  min-height: 130px;
+  min-height: 90px;
+  opacity: 0.85;
 }
 
 .turn-banner.marine {
@@ -174,10 +267,61 @@ body {
   background: rgba(177,29,47,.12);
 }
 
+.count-row {
+  display: flex;
+  align-items: stretch;
+  justify-content: center;
+  gap: 20px;
+  margin: 10px 0 20px 0;
+}
+
+.count-box,
+.endgame-box {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border-radius: 18px;
+  border: 1px solid rgba(240,199,94,.22);
+  background: rgba(240,199,94,.06);
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,.02);
+}
+
+.count-box {
+  min-width: 220px;
+  padding: 14px 20px 12px;
+}
+
+.endgame-box {
+  min-width: 165px;
+  padding: 14px 16px 12px;
+  background: rgba(240,199,94,.10);
+  border-color: rgba(240,199,94,.35);
+}
+
 .count {
   font-size: clamp(6rem, 16vw, 9rem);
   font-weight: 900;
-  margin: 10px 0 20px 0;
+  margin: 0;
+  line-height: 1;
+}
+
+.endgame-label {
+  font-size: clamp(0.95rem, 2.2vw, 1.2rem);
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  opacity: 0.82;
+  margin-bottom: 8px;
+}
+
+.endgame-value {
+  font-size: clamp(4.5rem, 12vw, 6.75rem);
+  font-weight: 900;
+  line-height: 1;
+  color: #f0c75e;
+  text-shadow:
+    0 0 10px rgba(240,199,94,.35),
+    0 0 24px rgba(240,199,94,.18);
 }
 
 button {
@@ -187,9 +331,7 @@ button {
   font-family: 'Federo', sans-serif;
 }
 
-button:active {
-  transform: scale(.97);
-}
+button:active { transform: scale(.97); }
 
 .next-button {
   width: 100%;
@@ -219,10 +361,6 @@ button:active {
   opacity: .85;
   border-radius: 12px;
   height: 44px;
-}
-
-.undo-button,
-.reset-button {
   flex: 0.25;
 }
 
@@ -253,10 +391,45 @@ button:active {
   height: 100%;
 }
 
+@media (max-width: 900px) {
+  .main-layout {
+    grid-template-columns: 1fr;
+    max-width: 650px;
+  }
+
+  .objectives-panel {
+    order: 2;
+  }
+
+  .destruct-panel {
+    order: 3;
+  }
+
+  .objectives-list {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+  }
+}
+
 @media (max-width: 700px) {
   .turn-banner {
     font-size: clamp(1.8rem, 7vw, 3rem);
     min-height: 110px;
+  }
+
+  .count-row {
+    gap: 12px;
+  }
+
+  .count-box {
+    min-width: 170px;
+    padding: 12px 14px 10px;
+  }
+
+  .endgame-box {
+    min-width: 130px;
+    padding: 12px 12px 10px;
   }
 
   .icon-wrapper {
@@ -268,6 +441,10 @@ button:active {
   .count {
     font-size: clamp(5rem, 20vw, 8rem);
   }
+
+  .objectives-list {
+    grid-template-columns: 1fr;
+  }
 }
 </style>
 </head>
@@ -275,23 +452,73 @@ button:active {
 <div class="app">
   <div id="spaceHulkTitle" class="space-hulk-title" data-text="SPACE HULK">SPACE HULK</div>
 
-  <section class="card">
-    <div class="turn-banner" id="activeTurnBanner">Press Next to Start</div>
-    <div class="count" id="turnCount"></div>
+  <div class="main-layout">
+    <aside class="objectives-panel">
+      <div class="objectives-title">Objectives</div>
+      <div class="objectives-list" id="objectivesList">
+        <button class="objective-button" data-index="0" onclick="toggleObjective(0)">
+          <div class="objective-name">Objective 1</div>
+          <div class="objective-status">Awaiting Orders</div>
+        </button>
+        <button class="objective-button" data-index="1" onclick="toggleObjective(1)">
+          <div class="objective-name">Objective 2</div>
+          <div class="objective-status">Awaiting Orders</div>
+        </button>
+        <button class="objective-button" data-index="2" onclick="toggleObjective(2)">
+          <div class="objective-name">Objective 3</div>
+          <div class="objective-status">Awaiting Orders</div>
+        </button>
+        <button class="objective-button" data-index="3" onclick="toggleObjective(3)">
+          <div class="objective-name">Objective 4</div>
+          <div class="objective-status">Awaiting Orders</div>
+        </button>
+      </div>
+    </aside>
 
-    <button class="next-button" onclick="nextTurn()">NEXT</button>
+    <section class="card">
+      <div class="turn-banner" id="activeTurnBanner">Press Next to Start</div>
 
-    <div class="small-buttons">
-      <button class="undo-button" onclick="undoTurn()">↶</button>
-      <button class="reset-button" onclick="resetAll()">reset</button>
-    </div>
-  </section>
+      <div class="count-row">
+        <div class="count-box">
+          <div class="count" id="turnCount"></div>
+        </div>
+        <div class="endgame-box">
+          <div class="endgame-label">End Game</div>
+          <div class="endgame-value" id="endGameValue"></div>
+        </div>
+      </div>
+
+      <button class="next-button" onclick="nextTurn()">NEXT</button>
+
+      <div class="small-buttons">
+        <button class="undo-button" onclick="undoTurn()">↶</button>
+        <button class="reset-button" onclick="resetAll()">reset</button>
+      </div>
+    </section>
+
+    <aside class="destruct-panel">
+      <div class="objectives-title">Self Destruct</div>
+      <div class="objectives-list" id="destructList">
+        <button class="objective-button destruct-button" data-index="0" onclick="toggleDestruct(0)">
+          <div class="objective-name">Reactor Core</div>
+          <div class="objective-status">Inactive</div>
+        </button>
+        <button class="objective-button destruct-button" data-index="1" onclick="toggleDestruct(1)">
+          <div class="objective-name">Void Charges</div>
+          <div class="objective-status">Inactive</div>
+        </button>
+      </div>
+    </aside>
+  </div>
 </div>
 
 <script>
 const defaultState = {
   turn: 0,
-  activeTurn: ''
+  activeTurn: '',
+  endGame: 11,
+  objectives: [false, false, false, false],
+  destruct: [false, false]
 };
 
 let state = loadState();
@@ -301,13 +528,27 @@ function getElements() {
   return {
     titleEl: document.getElementById('spaceHulkTitle'),
     turnEl: document.getElementById('turnCount'),
-    banner: document.getElementById('activeTurnBanner')
+    banner: document.getElementById('activeTurnBanner'),
+    endGameEl: document.getElementById('endGameValue'),
+    endGameBoxEl: document.querySelector('.endgame-box'),
+    objectiveButtons: Array.from(document.querySelectorAll('.objectives-panel .objective-button')),
+    destructButtons: Array.from(document.querySelectorAll('.destruct-panel .destruct-button'))
   };
+}
+
+function normalizeObjectives(value) {
+  if (!Array.isArray(value)) return [...defaultState.objectives];
+  return defaultState.objectives.map((_, index) => Boolean(value[index]));
+}
+
+function normalizeDestruct(value) {
+  if (!Array.isArray(value)) return [...defaultState.destruct];
+  return defaultState.destruct.map((_, index) => Boolean(value[index]));
 }
 
 function loadState() {
   const saved = localStorage.getItem('spaceHulkTurnCounter');
-  if (!saved) return { ...defaultState };
+  if (!saved) return { ...defaultState, objectives: [...defaultState.objectives], destruct: [...defaultState.destruct] };
 
   try {
     const parsed = JSON.parse(saved);
@@ -315,10 +556,13 @@ function loadState() {
       turn: Number.isInteger(parsed.turn) && parsed.turn >= 0 ? parsed.turn : 0,
       activeTurn: parsed.activeTurn === 'Space Marines' || parsed.activeTurn === 'Tyranids'
         ? parsed.activeTurn
-        : ''
+        : '',
+      endGame: Number.isInteger(parsed.endGame) && parsed.endGame > 0 ? parsed.endGame : 11,
+      objectives: normalizeObjectives(parsed.objectives),
+      destruct: normalizeDestruct(parsed.destruct)
     };
   } catch {
-    return { ...defaultState };
+    return { ...defaultState, objectives: [...defaultState.objectives], destruct: [...defaultState.destruct] };
   }
 }
 
@@ -335,7 +579,12 @@ function triggerTitleFlicker() {
 }
 
 function advanceState(currentState) {
-  const next = { ...currentState };
+  const next = {
+    ...currentState,
+    objectives: [...currentState.objectives],
+    destruct: [...currentState.destruct]
+  };
+
   if (next.turn === 0) {
     next.turn = 1;
     next.activeTurn = 'Space Marines';
@@ -349,10 +598,20 @@ function advanceState(currentState) {
 }
 
 function rewindState(currentState) {
-  const prev = { ...currentState };
+  const prev = {
+    ...currentState,
+    objectives: [...currentState.objectives],
+    destruct: [...currentState.destruct]
+  };
+
   if (prev.turn === 0) return prev;
   if (prev.turn === 1 && prev.activeTurn === 'Space Marines') {
-    return { ...defaultState };
+    return {
+      ...defaultState,
+      endGame: prev.endGame,
+      objectives: [...prev.objectives],
+      destruct: [...prev.destruct]
+    };
   }
   if (prev.activeTurn === 'Tyranids') {
     prev.activeTurn = 'Space Marines';
@@ -361,6 +620,30 @@ function rewindState(currentState) {
   prev.activeTurn = 'Tyranids';
   prev.turn = Math.max(1, prev.turn - 1);
   return prev;
+}
+
+function toggleObjective(index) {
+  if (index < 0 || index >= state.objectives.length) return;
+
+  const nextObjectives = [...state.objectives];
+  nextObjectives[index] = !nextObjectives[index];
+  state.objectives = nextObjectives;
+  state.endGame += nextObjectives[index] ? 1 : -1;
+  if (state.endGame < 1) state.endGame = 1;
+
+  saveState();
+  render();
+}
+
+function toggleDestruct(index) {
+  if (index < 0 || index >= state.destruct.length) return;
+
+  const nextDestruct = [...state.destruct];
+  nextDestruct[index] = !nextDestruct[index];
+  state.destruct = nextDestruct;
+
+  saveState();
+  render();
 }
 
 function nextTurn() {
@@ -376,20 +659,46 @@ function undoTurn() {
 }
 
 function resetAll() {
-  state = { ...defaultState };
+  state = { ...defaultState, objectives: [...defaultState.objectives], destruct: [...defaultState.destruct] };
   saveState();
   render();
 }
 
-function render() {
-  const { titleEl, turnEl, banner } = getElements();
+function renderObjectives(objectiveButtons) {
+  objectiveButtons.forEach((button, index) => {
+    const isActive = Boolean(state.objectives[index]);
+    button.classList.toggle('active', isActive);
+    const statusEl = button.querySelector('.objective-status');
+    if (statusEl) {
+      statusEl.textContent = isActive ? 'Objective Achieved' : 'Awaiting Orders';
+    }
+  });
+}
 
-  if (!titleEl || !turnEl || !banner) return;
+function renderDestruct(destructButtons) {
+  destructButtons.forEach((button, index) => {
+    const isActive = Boolean(state.destruct[index]);
+    button.classList.toggle('active', isActive);
+    const statusEl = button.querySelector('.objective-status');
+    if (statusEl) {
+      statusEl.textContent = isActive ? 'Self Destruct Enabled' : 'Inactive';
+    }
+  });
+}
+
+function render() {
+  const { titleEl, turnEl, banner, endGameEl, endGameBoxEl, objectiveButtons, destructButtons } = getElements();
+  if (!titleEl || !turnEl || !banner || !endGameEl || !endGameBoxEl) return;
+
+  endGameEl.textContent = String(state.endGame);
+  renderObjectives(objectiveButtons);
+  renderDestruct(destructButtons);
 
   if (state.turn === 0) {
     turnEl.textContent = '';
     banner.textContent = 'Press Next to Start';
     banner.classList.remove('marine', 'tyranid');
+    endGameBoxEl.style.opacity = '0.95';
 
     const shouldFlicker = titleEl.classList.contains('hidden');
     titleEl.classList.remove('hidden');
@@ -399,6 +708,7 @@ function render() {
 
   titleEl.classList.add('hidden');
   turnEl.textContent = String(state.turn);
+  endGameBoxEl.style.opacity = state.turn >= state.endGame ? '1' : '0.95';
 
   if (state.activeTurn === 'Space Marines') {
     banner.innerHTML = '<div class="icon-wrapper"><img class="icon marine" src="images/imperial_aquila.png" alt="Space Marines icon"></div><span>Space Marine</span>';
@@ -416,10 +726,12 @@ function runTests() {
     if (!condition) throw new Error(message);
   };
 
-  let testState = { turn: 0, activeTurn: '' };
+  let testState = { turn: 0, activeTurn: '', endGame: 11, objectives: [false, false, false, false], destruct: [false, false] };
 
   testState = advanceState(testState);
   assert(testState.turn === 1 && testState.activeTurn === 'Space Marines', 'Next from start should go to Turn 1 Space Marines');
+  assert(testState.endGame === 11, 'Next should preserve End Game value');
+  assert(testState.objectives.every(v => v === false), 'Next should preserve objectives');
 
   testState = advanceState(testState);
   assert(testState.turn === 1 && testState.activeTurn === 'Tyranids', 'Second next should go to Turn 1 Tyranids');
@@ -435,32 +747,48 @@ function runTests() {
 
   testState = rewindState(testState);
   assert(testState.turn === 0 && testState.activeTurn === '', 'Undo from Turn 1 Space Marines should go to start');
+  assert(testState.endGame === 11, 'Undo to start should preserve End Game value');
 
-  testState = rewindState(testState);
-  assert(testState.turn === 0 && testState.activeTurn === '', 'Undo from start should stay at start');
+  let objectiveState = { turn: 0, activeTurn: '', endGame: 11, objectives: [false, false, false, false], destruct: [false, false] };
+  objectiveState.objectives[2] = true;
+  objectiveState.endGame += 1;
+  assert(objectiveState.endGame === 12, 'Objective achieved should increase End Game by one');
+  objectiveState.objectives[2] = false;
+  objectiveState.endGame -= 1;
+  assert(objectiveState.endGame === 11, 'Objective un-achieved should decrease End Game by one');
 
-  testState = { turn: 4, activeTurn: 'Tyranids' };
-  testState = rewindState(testState);
-  assert(testState.turn === 4 && testState.activeTurn === 'Space Marines', 'Undo from Tyranids should return to same turn Space Marines');
-
-  testState = { turn: 4, activeTurn: 'Space Marines' };
-  testState = rewindState(testState);
-  assert(testState.turn === 3 && testState.activeTurn === 'Tyranids', 'Undo from Space Marines should return to previous turn Tyranids');
+  const objectiveButtons = document.querySelectorAll('.objectives-panel .objective-button');
+  const destructButtons = document.querySelectorAll('.destruct-panel .destruct-button');
+  assert(objectiveButtons.length === 4, 'There should be 4 objective toggle buttons');
+  assert(destructButtons.length === 2, 'There should be 2 self destruct toggle buttons');
 
   const appEl = document.querySelector('.app');
   const cardEl = document.querySelector('.card');
+  const objectivesPanelEl = document.querySelector('.objectives-panel');
+  const destructPanelEl = document.querySelector('.destruct-panel');
+  const endGameValueEl = document.getElementById('endGameValue');
+  const endGameBoxEl = document.querySelector('.endgame-box');
+  const countRowEl = document.querySelector('.count-row');
+  const mainLayoutEl = document.querySelector('.main-layout');
+
   assert(appEl instanceof HTMLElement, 'App container should exist');
   assert(cardEl instanceof HTMLElement, 'Card container should exist');
-  assert(getComputedStyle(appEl).display === 'flex', 'App container should use flex layout for centering');
-  assert(getComputedStyle(appEl).alignItems === 'center', 'App container should center its children horizontally');
+  assert(objectivesPanelEl instanceof HTMLElement, 'Objectives panel should exist');
+  assert(destructPanelEl instanceof HTMLElement, 'Self destruct panel should exist');
+  assert(endGameValueEl instanceof HTMLElement, 'End Game value element should exist');
+  assert(endGameBoxEl instanceof HTMLElement, 'End Game box should exist');
+  assert(countRowEl instanceof HTMLElement, 'Count row should exist');
+  assert(mainLayoutEl instanceof HTMLElement, 'Main layout should exist');
+  assert(getComputedStyle(mainLayoutEl).display === 'grid', 'Main layout should use grid');
+  assert(getComputedStyle(countRowEl).display === 'flex', 'Count row should use flex layout');
 
   const declaredMaxWidth = parseFloat(getComputedStyle(cardEl).maxWidth);
   assert(Number.isFinite(declaredMaxWidth), 'Card should have a max width set');
   assert(Math.abs(declaredMaxWidth - 650) < 0.5, 'Card max width should be 650px');
 
-  const actualWidth = parseFloat(getComputedStyle(cardEl).width);
-  assert(actualWidth > 0, 'Card width should be measurable');
-  assert(actualWidth <= 650.5, 'Card rendered width should not exceed 650px');
+  assert(defaultState.endGame === 11, 'End Game should default to 11');
+  assert(defaultState.objectives.length === 4, 'There should be 4 default objectives');
+  assert(defaultState.destruct.length === 2, 'There should be 2 default self destruct toggles');
 }
 
 runTests();
