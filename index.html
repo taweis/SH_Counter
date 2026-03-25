@@ -34,7 +34,6 @@ body {
 
 .app {
   width: 100%;
-  max-width: none;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -51,10 +50,14 @@ body {
   letter-spacing: 4px;
   white-space: nowrap;
   color: #f0c75e;
-  -webkit-text-stroke: 1px rgba(0,0,0,0.6);
   text-shadow:
-    0 0 6px rgba(240,199,94,.5),
-    0 0 14px rgba(240,199,94,.25);
+    -1px -1px 0 rgba(0,0,0,0.85),
+     1px -1px 0 rgba(0,0,0,0.85),
+    -1px  1px 0 rgba(0,0,0,0.85),
+     1px  1px 0 rgba(0,0,0,0.85),
+     0 0 14px rgba(240,199,94,.75),
+     0 0 32px rgba(240,199,94,.45),
+     0 0 60px rgba(240,199,94,.25);
   position: relative;
   line-height: 1;
 }
@@ -81,40 +84,56 @@ body {
 .space-hulk-title::after {
   content: attr(data-text);
   position: absolute;
-  left: 50%;
-  top: 0;
-  transform: translateX(-50%);
-  width: 100%;
-  height: 100%;
+  inset: 0;
   pointer-events: none;
   white-space: nowrap;
   font: inherit;
   letter-spacing: inherit;
   line-height: inherit;
   text-align: center;
+  color: transparent;
+  text-shadow: none;
   background: linear-gradient(
-    120deg,
+    90deg,
     rgba(255,255,255,0) 0%,
-    rgba(255,255,255,0) 40%,
-    rgba(255,255,255,0.9) 50%,
-    rgba(255,255,255,0) 60%,
+    rgba(255,255,255,0) 49.2%,
+    rgba(255,255,255,0.95) 50%,
+    rgba(255,255,255,0) 50.8%,
     rgba(255,255,255,0) 100%
   );
   background-size: 220% 100%;
   background-repeat: no-repeat;
+  background-position: -140% 0;
   -webkit-background-clip: text;
   background-clip: text;
-  color: transparent;
-  animation: sweep 6s linear infinite;
+  -webkit-text-fill-color: transparent;
+  animation: sweep 5s linear infinite;
 }
 
 @keyframes sweep {
-  0% { background-position: -150% 0; }
-  100% { background-position: 150% 0; }
+  0% { background-position: -140% 0; }
+  100% { background-position: 140% 0; }
+}
+
+@supports (-webkit-touch-callout: none) {
+  .space-hulk-title {
+    text-shadow:
+      -1px -1px 0 rgba(0,0,0,0.55),
+       1px -1px 0 rgba(0,0,0,0.55),
+      -1px  1px 0 rgba(0,0,0,0.55),
+       1px  1px 0 rgba(0,0,0,0.55),
+       0 0 8px rgba(240,199,94,.55),
+       0 0 18px rgba(240,199,94,.28),
+       0 0 36px rgba(240,199,94,.14);
+  }
+
+  .space-hulk-title::after {
+    opacity: 0.9;
+  }
 }
 
 .card {
-  width: 100%;
+  width: min(100%, 650px);
   max-width: 650px;
   background: rgba(10,15,30,.85);
   border: 2px solid rgba(255,255,255,.15);
@@ -202,10 +221,7 @@ button:active {
   height: 44px;
 }
 
-.undo-button {
-  flex: .25;
-}
-
+.undo-button,
 .reset-button {
   flex: 0.25;
 }
@@ -437,7 +453,14 @@ function runTests() {
   assert(cardEl instanceof HTMLElement, 'Card container should exist');
   assert(getComputedStyle(appEl).display === 'flex', 'App container should use flex layout for centering');
   assert(getComputedStyle(appEl).alignItems === 'center', 'App container should center its children horizontally');
-  assert(getComputedStyle(cardEl).maxWidth === '650px', 'Card should keep a fixed max width');
+
+  const declaredMaxWidth = parseFloat(getComputedStyle(cardEl).maxWidth);
+  assert(Number.isFinite(declaredMaxWidth), 'Card should have a max width set');
+  assert(Math.abs(declaredMaxWidth - 650) < 0.5, 'Card max width should be 650px');
+
+  const actualWidth = parseFloat(getComputedStyle(cardEl).width);
+  assert(actualWidth > 0, 'Card width should be measurable');
+  assert(actualWidth <= 650.5, 'Card rendered width should not exceed 650px');
 }
 
 runTests();
